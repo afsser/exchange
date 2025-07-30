@@ -1,11 +1,7 @@
-
 "use client";
-import Image from "next/image";
 import React, { useState } from "react";
 
-
 export default function Home() {
-  // Currency list for select options (can be expanded)
   const currencies = ["USD", "EUR", "GBP", "BRL", "JPY", "AUD", "CAD", "CHF", "CNY"];
 
   const [amount, setAmount] = useState(1);
@@ -25,8 +21,8 @@ export default function Home() {
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      setResult(`${data.amount} ${data.base} = ${data.rates[to]} ${to}`);
-    } catch (err: any) {
+      setResult(`${data.amount} ${data.base} = ${data.rates[to].toFixed(2)} ${to}`);
+    } catch {
       setError("Conversion failed. Try again.");
     } finally {
       setLoading(false);
@@ -34,58 +30,114 @@ export default function Home() {
   }
 
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
-        <h1 className="text-2xl font-bold mb-4 text-center sm:text-left">Currency Converter</h1>
-        <div className="w-full max-w-md bg-background border border-black/[.08] dark:border-white/[.145] rounded-lg p-6 shadow flex flex-col gap-6">
-          <form className="flex flex-col gap-4" onSubmit={handleConvert}>
-            <div className="flex gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
+      <div className="max-w-md mx-auto">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">
+          Currency Converter
+        </h1>
+        
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-200 dark:border-gray-700">
+          <form onSubmit={handleConvert} className="space-y-6">
+            {/* Amount Input */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Amount
+              </label>
               <input
                 type="number"
                 min={0}
                 step={0.01}
                 value={amount}
                 onChange={e => setAmount(Number(e.target.value))}
-                className="flex-1 px-3 py-2 rounded border border-black/[.08] dark:border-white/[.145] bg-background text-foreground"
-                placeholder="Amount"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                placeholder="Enter amount"
                 required
               />
-              <select
-                value={from}
-                onChange={e => setFrom(e.target.value)}
-                className="px-3 py-2 rounded border border-black/[.08] dark:border-white/[.145] bg-background text-foreground"
-              >
-                {currencies.map(cur => (
-                  <option key={cur} value={cur}>{cur}</option>
-                ))}
-              </select>
-              <span className="px-2 self-center">→</span>
-              <select
-                value={to}
-                onChange={e => setTo(e.target.value)}
-                className="px-3 py-2 rounded border border-black/[.08] dark:border-white/[.145] bg-background text-foreground"
-              >
-                {currencies.map(cur => (
-                  <option key={cur} value={cur}>{cur}</option>
-                ))}
-              </select>
             </div>
+
+            {/* Currency Selectors */}
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  From
+                </label>
+                <select
+                  value={from}
+                  onChange={e => setFrom(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  {currencies.map(currency => (
+                    <option key={currency} value={currency}>{currency}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-full">
+                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                  </svg>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  To
+                </label>
+                <select
+                  value={to}
+                  onChange={e => setTo(e.target.value)}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                >
+                  {currencies.map(currency => (
+                    <option key={currency} value={currency}>{currency}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Convert Button */}
             <button
               type="submit"
-              className="mt-2 px-4 py-2 rounded bg-foreground text-background font-semibold hover:bg-[#383838] dark:hover:bg-[#ccc] transition-colors"
               disabled={loading}
+              className="w-full py-3 px-6 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed"
             >
-              {loading ? "Converting..." : "Convert"}
+              {loading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Converting...
+                </span>
+              ) : (
+                "Convert Currency"
+              )}
             </button>
           </form>
-          <div className="text-center text-base text-foreground min-h-[32px]">
-            {error ? <span className="text-red-500">{error}</span> : result ? <span className="font-bold">{result}</span> : "Enter the data to calculate the conversion."}
+
+          {/* Result Display */}
+          <div className="mt-6 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 min-h-[60px] flex items-center justify-center">
+            {error ? (
+              <p className="text-red-600 dark:text-red-400 text-center font-medium">
+                ❌ {error}
+              </p>
+            ) : result ? (
+              <p className="text-green-600 dark:text-green-400 text-center font-bold text-lg">
+                💰 {result}
+              </p>
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400 text-center">
+                Enter amount and currencies to see conversion
+              </p>
+            )}
           </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center text-xs text-foreground/70">
-        <span>© {new Date().getFullYear()} Currency Converter</span>
-      </footer>
+
+        <footer className="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
+          © {new Date().getFullYear()} Currency Converter
+        </footer>
+      </div>
     </div>
   );
 }
