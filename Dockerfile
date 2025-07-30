@@ -1,11 +1,16 @@
 # Dockerfile
 FROM node:18
 
+RUN apt-get update && apt-get install -y fish
+
 # Cria diretório da aplicação
 WORKDIR /app
 
 # Instala as dependências
-RUN npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --yes
+COPY app/package*.json ./
+RUN npm install
+
+COPY app/ ./
 
 # Expõe a porta padrão do Next.js
 EXPOSE 3000

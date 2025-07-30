@@ -2,21 +2,20 @@
   "name": "Currency Exchange API",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "nextjs",
-  "workspaceFolder": "/app",
+  "workspaceFolder": "/app/app",
+  "features": {
+    "ghcr.io/devcontainers/features/fish:1": {}
+  },
   "customizations": {
     "vscode": {
       "extensions": [
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
         "ms-vscode.vscode-typescript-next"
-      ],
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "bash"
-      }
+      ]
     }
   },
   "forwardPorts": [3000],
   "postCreateCommand": "npm install",
-  "remoteUser": "root",
-  "updateRemoteUserUID": false
+  "remoteUser": "root"
 }
