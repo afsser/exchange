@@ -11,20 +11,20 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Handle same currency conversion
     if (from === to) {
       const numAmount = parseFloat(amount);
       return NextResponse.json({ 
         amount: numAmount, 
         base: from, 
-        rates: { [to]: numAmount } 
+        rates: { [to]: numAmount } ,
+        rate: 1,
+        date: new Date().toISOString().split('T')[0],
+        time_last_updated: Math.floor(Date.now() / 1000)
       });
     }
-
-    // Use ExchangeRate-API (free, no API key required)
     const apiUrl = `https://api.exchangerate-api.com/v4/latest/${from}`;
     console.log('Calling ExchangeRate API:', apiUrl);
-    
+
     const apiRes = await fetch(apiUrl);
     
     if (!apiRes.ok) {
@@ -37,22 +37,23 @@ export async function GET(request: Request) {
 
     const data = await apiRes.json();
     console.log('ExchangeRate API response:', data);
-    
-    // Check if target currency exists in rates
+
     if (!data.rates || !data.rates[to]) {
       return NextResponse.json({ 
         error: `Currency ${to} not supported` 
       }, { status: 400 });
     }
-    
-    // Calculate the converted amount
+
     const rate = data.rates[to];
     const convertedAmount = parseFloat(amount) * rate;
     
     return NextResponse.json({
       amount: parseFloat(amount),
       base: from,
-      rates: { [to]: convertedAmount }
+      rates: { [to]: convertedAmount },
+      rate: rate,
+      date: data.date,
+      time_last_updated: data.time_last_updated
     });
   } catch (err: unknown) {
     console.error('Convert API error:', err);

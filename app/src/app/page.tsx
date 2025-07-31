@@ -1,15 +1,47 @@
 "use client";
 import React, { useState } from "react";
 
+interface ConversionResult {
+  amount: number;
+  base: string;
+  rates: { [key: string]: number };
+  rate: number;
+  date: string;
+  time_last_updated: number;
+}
+
 export default function Home() {
   const currencies = ["USD", "EUR", "GBP", "BRL", "JPY", "AUD", "CAD", "CHF", "CNY"];
+
+  const MAX_AMOUNT = 1000000000000;
 
   const [amount, setAmount] = useState(1);
   const [from, setFrom] = useState("USD");
   const [to, setTo] = useState("EUR");
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<ConversionResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showLimitWarning, setShowLimitWarning] = useState(false);
+
+  function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+    const numValue = Number(value);
+    
+    if (value === '') {
+      setAmount(0);
+      setShowLimitWarning(false);
+      return;
+    }
+    if (numValue > MAX_AMOUNT || !Number.isFinite(numValue)) {
+      setAmount(MAX_AMOUNT);
+      setShowLimitWarning(true);
+      setTimeout(() => setShowLimitWarning(false), 3000);
+      return;
+    }
+    
+    setAmount(numValue);
+    setShowLimitWarning(false);
+  }
 
   async function handleConvert(e: React.FormEvent) {
     e.preventDefault();
@@ -21,12 +53,23 @@ export default function Home() {
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      setResult(`${data.amount} ${data.base} = ${data.rates[to].toFixed(2)} ${to}`);
+      setResult(data);
     } catch {
       setError("Conversion failed. Try again.");
     } finally {
       setLoading(false);
     }
+  }
+
+  function formatDate(timestamp: number): string {
+    return new Date(timestamp * 1000).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'America/Sao_Paulo'
+    });
   }
 
   return (
@@ -48,11 +91,20 @@ export default function Home() {
                 min={0}
                 step={0.01}
                 value={amount}
-                onChange={e => setAmount(Number(e.target.value))}
+                onChange={handleAmountChange}
                 className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                 placeholder="Enter amount"
                 required
               />
+
+              {/* Limit Warning */}
+              {showLimitWarning && (
+                <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-sm">
+                  <p className="text-yellow-800 dark:text-yellow-200">
+                    ⚠️ Valor limitado ao máximo suportado: {MAX_AMOUNT.toLocaleString()}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Currency Selectors */}
@@ -122,10 +174,16 @@ export default function Home() {
               <p className="text-red-600 dark:text-red-400 text-center font-medium">
                 ❌ {error}
               </p>
-            ) : result ? (
-              <p className="text-green-600 dark:text-green-400 text-center font-bold text-lg">
-                💰 {result}
-              </p>
+            ) : result && result.rates[to] !== undefined ? (
+              <div className="text-center space-y-2">
+                <p className="text-green-600 dark:text-green-400 font-bold text-lg">
+                  💰 {result.amount} {result.base} = {result.rates[to].toFixed(2)} {to}
+                </p>
+                <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                  <p>📊 Taxa: 1 {result.base} = {result.rate.toFixed(4)} {to}</p>
+                  <p>🕒 Atualizado: {formatDate(result.time_last_updated)}</p>
+                </div>
+              </div>
             ) : (
               <p className="text-gray-500 dark:text-gray-400 text-center">
                 Enter amount and currencies to see conversion
