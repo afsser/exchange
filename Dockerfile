@@ -1,19 +1,24 @@
 # Dockerfile
 FROM node:18
 
-RUN apt-get update && apt-get install -y fish
+# Set Fish as the default shell
+RUN apt-get update && \
+    apt-get install -y fish && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
-# Cria diretório da aplicação
+RUN chsh -s /usr/bin/fish root
+
 WORKDIR /app
 
-# Instala as dependências
+# Dependencies
 COPY app/package*.json ./
 RUN npm install
 
 COPY app/ ./
 
-# Expõe a porta padrão do Next.js
+# Exposes the default port for Next.js
 EXPOSE 3000
 
-# Comando padrão ao rodar o container
+# Default command when running the container
 CMD ["npm", "run", "dev"]

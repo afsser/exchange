@@ -2,17 +2,17 @@
   "name": "Currency Exchange API",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "nextjs",
-  "workspaceFolder": "/app/app",
-  "features": {
-    "ghcr.io/devcontainers/features/fish:1": {}
-  },
+  "workspaceFolder": "/app",
   "customizations": {
     "vscode": {
       "extensions": [
         "bradlc.vscode-tailwindcss",
         "esbenp.prettier-vscode",
         "ms-vscode.vscode-typescript-next"
-      ]
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "fish"
+      }
     }
   },
   "forwardPorts": [3000],
