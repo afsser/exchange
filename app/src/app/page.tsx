@@ -2,6 +2,15 @@
 import Link from "next/link";
 import Image from "next/image";
 
+interface Feature {
+  title: string;
+  description: string;
+  icon: string;
+  href: string;
+  color: string;
+  available: boolean;
+}
+
 export default function Home() {
   const features = [
     {
@@ -13,10 +22,10 @@ export default function Home() {
       available: true
     },
     {
-      title: "Alpha Vantage",
-      description: "Stock market data and financial analytics",
-      icon: "📈",
-      href: "/alpha-vantage",
+      title: "Exposure Calculator",
+      description: "Calculate currency exposure for international transactions",
+      icon: "⚖️",
+      href: "/exposure-calculator",
       color: "from-green-500 to-green-600",
       available: false
     },
@@ -81,7 +90,7 @@ export default function Home() {
   );
 }
 
-function FeatureCard({ feature }: { feature: any }) {
+function FeatureCard({ feature }: { feature: Feature }) {
   return (
     <div className={`
       relative overflow-hidden rounded-2xl shadow-xl transition-all duration-300
