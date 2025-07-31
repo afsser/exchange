@@ -22,12 +22,12 @@ export default function Home() {
       available: true
     },
     {
-      title: "Exposure Calculator",
-      description: "Calculate currency exposure for international transactions",
-      icon: "⚖️",
+      title: "FX Exposure Calculator",
+      description: "Assess foreign exchange risk and calculate Value at Risk for currency exposures",
+      icon: "📊",
       href: "/exposure-calculator",
       color: "from-green-500 to-green-600",
-      available: false
+      available: true
     },
     {
       title: "More Features",
