@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Currex",
+  title: "Trade Tools",
   description: "Exchange Rates live, through API",
   icons: {
     icon: '/favicon.ico',
