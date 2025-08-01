@@ -433,6 +433,7 @@ export class AlphaVantageService {
       'USDCNY': 4.2, 'CNYUSD': 4.2,
       'EURCNY': 8.1, 'CNYEUR': 8.1,
       'GBPCNY': 9.8, 'CNYGBP': 9.8,
+      'CNYBRL': 18.4, 'BRLCNY': 18.4, // CNY/BRL - Alta volatilidade (mercados emergentes)
       
       // Nordic pairs
       'USDSEK': 12.3, 'SEKUSD': 12.3,

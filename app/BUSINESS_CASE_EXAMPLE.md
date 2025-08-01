@@ -21,10 +21,10 @@
 
 ### 📈 Análise de Risco Cambial
 
-#### Dados de Mercado (Reais via Alpha Vantage API)
+#### Dados de Mercado (Alpha Vantage API ou Fallback Inteligente)
 - **Volatilidade histórica**: 18.4% ao ano
-- **Período de análise**: 30 dias de dados históricos
-- **Fonte**: Dados reais de mercado (CNY/BRL)
+- **Período de análise**: 30 dias de dados históricos (ou estimativa baseada em pares similares)
+- **Fonte**: Dados reais de mercado CNY/BRL (se API disponível) ou fallback inteligente
 - **Cálculo**: Desvio padrão anualizado (252 dias úteis)
 
 #### Cálculo do VaR (Value at Risk)
@@ -133,10 +133,10 @@ Confidence Level: 95%
 ### Outputs Gerados
 ```
 Calculated VaR: R$ 89,250.00
-Volatility (Real Data): 18.4% p.a.
+Volatility (Smart Fallback): 18.4% p.a.
 Risk Percentage: 5.7%
-Data Source: 🔴 Real Historical Data
-Cache Status: 📅 Daily Cache (Fresh)
+Data Source: 📈 Estimated
+Cache Status: 📊 Fallback Data (CNY/BRL pair)
 ```
 
 ### Funcionalidades Utilizadas

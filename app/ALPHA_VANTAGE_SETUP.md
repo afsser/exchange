@@ -118,6 +118,38 @@ Esta implementação demonstra:
 
 ## Troubleshooting
 
+### Problema Específico: CNY/BRL usando dados de fallback
+
+Se você estiver testando especificamente o **par CNY/BRL** (como no exemplo da TechBrasil Importadora) e vendo:
+```
+⚠️ API error - using fallback data - Using fallback data
+```
+
+**Possíveis causas:**
+
+1. **API Key não configurada**: 
+   - Verifique se `.env.local` tem uma API key real ao invés de `demo`
+   - Obtenha sua API key gratuita em: https://www.alphavantage.co/support/#api-key
+
+2. **Rate Limit excedido**:
+   - API gratuita permite apenas 5 calls/minuto
+   - Sistema automaticamente usa fallback quando limite é atingido
+
+3. **Par CNY/BRL com dados limitados**:
+   - Alpha Vantage pode ter dados limitados para alguns pares emergentes
+   - Sistema usa fallback inteligente com volatilidade de **18.4%** para CNY/BRL
+
+**Como resolver:**
+```bash
+# 1. Configure sua API key real em .env.local
+ALPHA_VANTAGE_API_KEY=sua_api_key_aqui
+
+# 2. Reinicie o servidor
+npm run dev
+
+# 3. Teste novamente o cálculo de volatilidade
+```
+
 ### API Key não está funcionando
 - Verifique se a variável `ALPHA_VANTAGE_API_KEY` está definida em `.env.local`
 - Reinicie o servidor após adicionar a variável
