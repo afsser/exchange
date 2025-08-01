@@ -1,8 +1,8 @@
-# Documentação Técnica - FX Exposure Calculator
+# Technical Documentation - FX Exposure Calculator
 
-## 🏗️ Arquitetura do Sistema
+## 🏗️ System Architecture
 
-### Componentes Principais
+### Main Components
 
 #### 1. Alpha Vantage Service (`src/lib/alphaVantage.ts`)
 ```typescript
@@ -11,16 +11,16 @@ class AlphaVantageRateLimiter {
   private readonly maxCallsPerMinute = 5;
   
   async waitIfNeeded(): Promise<void> {
-    // Implementa controle automático de rate limiting
+    // Implements automatic rate limiting control
   }
 }
 ```
 
-**Funcionalidades**:
-- ✅ Rate limiting automático (5 calls/minuto)
-- ✅ Cache diário com localStorage
-- ✅ Fallback para dados sintéticos
-- ✅ Cálculo de volatilidade baseado em dados reais
+**Features**:
+- ✅ Automatic rate limiting (5 calls/minute)
+- ✅ Daily cache with localStorage
+- ✅ Fallback to synthetic data
+- ✅ Volatility calculation based on real data
 
 #### 2. API Endpoint (`src/app/api/volatility/route.ts`)
 ```typescript
@@ -30,51 +30,51 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-**Características**:
-- Endpoint RESTful para dados de volatilidade
-- Integração com cache diário
-- Tratamento de erros robusto
-- Resposta padronizada JSON
+**Characteristics**:
+- RESTful endpoint for volatility data
+- Daily cache integration
+- Robust error handling
+- Standardized JSON response
 
-#### 3. Interface Principal (`src/app/exposure-calculator/page.tsx`)
+#### 3. Main Interface (`src/app/exposure-calculator/page.tsx`)
 ```typescript
 const handlePreCalculateVolatility = async () => {
   setIsLoadingVolatility(true);
-  // Carrega volatilidade sob demanda
+  // Loads volatility on demand
 };
 ```
 
-**Recursos da UI**:
-- Controle manual de carregamento de dados
-- Indicadores visuais de status
-- Cálculos detalhados expostos
-- Feedback em tempo real
+**UI Features**:
+- Manual data loading control
+- Visual status indicators
+- Detailed calculations exposed
+- Real-time feedback
 
-## 📊 Algoritmos Financeiros
+## 📊 Financial Algorithms
 
-### Cálculo de Volatilidade
+### Volatility Calculation
 ```typescript
 function calculateVolatility(prices: number[]): number {
-  // 1. Calcular retornos logarítmicos diários
+  // 1. Calculate daily logarithmic returns
   const returns = prices.slice(1).map((price, i) => 
     Math.log(price / prices[i])
   );
   
-  // 2. Calcular variância dos retornos
+  // 2. Calculate variance of returns
   const mean = returns.reduce((sum, r) => sum + r, 0) / returns.length;
   const variance = returns.reduce((sum, r) => 
     sum + Math.pow(r - mean, 2), 0
   ) / (returns.length - 1);
   
-  // 3. Anualizar volatilidade (252 dias úteis)
+  // 3. Annualize volatility (252 trading days)
   const dailyVolatility = Math.sqrt(variance);
   const annualizedVolatility = dailyVolatility * Math.sqrt(252);
   
-  return annualizedVolatility * 100; // Em percentual
+  return annualizedVolatility * 100; // As percentage
 }
 ```
 
-### Cálculo do VaR (Value at Risk)
+### VaR (Value at Risk) Calculation
 ```typescript
 function calculateVaR(
   exposure: number,
@@ -82,10 +82,10 @@ function calculateVaR(
   days: number,
   confidenceLevel: number = 0.95
 ): number {
-  // Z-score para 95% de confiança
+  // Z-score for 95% confidence
   const zScore = 1.645;
   
-  // Fórmula do VaR
+  // VaR formula
   const var = exposure * 
               (volatility / 100) * 
               Math.sqrt(days / 252) * 
@@ -95,9 +95,9 @@ function calculateVaR(
 }
 ```
 
-## 🔧 Sistema de Cache
+## 🔧 Cache System
 
-### Cache Diário (localStorage)
+### Daily Cache (localStorage)
 ```typescript
 interface DailyVolatilityCache {
   [currencyPair: string]: {
@@ -108,11 +108,11 @@ interface DailyVolatilityCache {
 }
 ```
 
-**Estratégia de Cache**:
-- **Duração**: 24 horas por entrada
-- **Chave**: Par de moedas (ex: "USD/BRL")
-- **Limpeza**: Automática na próxima consulta
-- **Vantagem**: Reduz chamadas API de 30+ para 1 por dia
+**Cache Strategy**:
+- **Duration**: 24 hours per entry
+- **Key**: Currency pair (e.g., "USD/BRL")
+- **Cleanup**: Automatic on next query
+- **Advantage**: Reduces API calls from 30+ to 1 per day
 
 ### Rate Limiting
 ```typescript
@@ -120,12 +120,12 @@ class AlphaVantageRateLimiter {
   async waitIfNeeded(): Promise<void> {
     const now = Date.now();
     
-    // Remove chamadas antigas (>1 minuto)
+    // Remove old calls (>1 minute)
     this.callTimes = this.callTimes.filter(time => 
       now - time < 60000
     );
     
-    // Se já atingiu o limite, aguarda
+    // If limit reached, wait
     if (this.callTimes.length >= this.maxCallsPerMinute) {
       const oldestCall = Math.min(...this.callTimes);
       const waitTime = 60000 - (now - oldestCall);
@@ -137,9 +137,9 @@ class AlphaVantageRateLimiter {
 }
 ```
 
-## 🌐 Integração Alpha Vantage API
+## 🌐 Alpha Vantage API Integration
 
-### Endpoints Utilizados
+### Used Endpoints
 
 #### 1. FX Daily Data
 ```
@@ -150,7 +150,7 @@ to_symbol=BRL&
 apikey=YOUR_API_KEY
 ```
 
-#### 2. Estrutura da Resposta
+#### 2. Response Structure
 ```json
 {
   "Meta Data": {
@@ -169,7 +169,7 @@ apikey=YOUR_API_KEY
 }
 ```
 
-### Tratamento de Dados
+### Data Processing
 ```typescript
 function parseAlphaVantageData(data: any): number[] {
   const timeSeries = data['Time Series (FX)'];
@@ -177,7 +177,7 @@ function parseAlphaVantageData(data: any): number[] {
   
   Object.keys(timeSeries)
     .sort()
-    .slice(-30) // Últimos 30 dias
+    .slice(-30) // Last 30 days
     .forEach(date => {
       const closePrice = parseFloat(timeSeries[date]['4. close']);
       prices.push(closePrice);
@@ -187,9 +187,9 @@ function parseAlphaVantageData(data: any): number[] {
 }
 ```
 
-## 🔍 Monitoramento e Debug
+## 🔍 Monitoring and Debug
 
-### Logs de Sistema
+### System Logs
 ```typescript
 console.log('📊 Volatility Calculation:', {
   currencyPair: pair,
@@ -200,17 +200,17 @@ console.log('📊 Volatility Calculation:', {
 });
 ```
 
-### Indicadores na Interface
-- 🔴 **Real Historical Data**: Dados reais da API
-- 📅 **Daily Cache**: Cache ativo (dados do dia)
-- ⚡ **Fresh calculation**: Dados recém-calculados
-- 🔄 **Loading**: Carregando dados da API
+### Interface Indicators
+- 🔴 **Real Historical Data**: Real API data
+- 📅 **Daily Cache**: Active cache (today's data)
+- ⚡ **Fresh calculation**: Newly calculated data
+- 🔄 **Loading**: Loading API data
 
-### Contador de API Calls
+### API Calls Counter
 ```typescript
 const [apiCallCount, setApiCallCount] = useState(0);
 
-// Incrementa a cada chamada real para a API
+// Increments on each real API call
 const incrementApiCallCount = () => {
   const newCount = apiCallCount + 1;
   setApiCallCount(newCount);
@@ -218,9 +218,9 @@ const incrementApiCallCount = () => {
 };
 ```
 
-## 🚀 Build e Deploy
+## 🚀 Build and Deploy
 
-### Configuração Next.js
+### Next.js Configuration
 ```javascript
 // next.config.js
 const nextConfig = {
@@ -233,91 +233,395 @@ const nextConfig = {
 };
 ```
 
-### Scripts de Build
+### Build Scripts
 ```bash
-# Build local (desenvolvimento)
+# Local build (development)
 npm run build
 
-# Build produção (recomendado)
+# Production build (recommended)
 NODE_ENV=production npm run build
 
-# Deploy no Vercel
+# Deploy to Vercel
 vercel --prod
 ```
 
-### Variáveis de Ambiente
-```bash
-# .env.local
-ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
+### Environment Variables Configuration
 
-# .env.production (para deploy)
-ALPHA_VANTAGE_API_KEY=production_api_key
+#### Development (`.env.local`)
+```bash
+# .env.local - NEVER commit to Git
+ALPHA_VANTAGE_API_KEY=5M4DMAZCO9I74257
 ```
 
-## 📈 Performance e Otimizações
+#### Production (Vercel Dashboard)
+1. Access: https://vercel.com/dashboard
+2. Select the project
+3. Go to **Settings** → **Environment Variables**
+4. Add:
+   - **Name**: `ALPHA_VANTAGE_API_KEY`
+   - **Value**: `your_api_key_here`
+   - **Environment**: Production, Preview, Development
 
-### Métricas de Performance
-- **Primeira carga**: ~2-3 segundos (com dados reais)
-- **Cargas subsequentes**: ~0.1 segundos (cache)
-- **Calls API por dia**: 1 por par de moedas
-- **Armazenamento local**: ~1KB por par de moedas
+#### Post-deploy Verification
+```bash
+# Test if the variable was configured correctly
+curl https://your-project.vercel.app/api/test-env | jq '{hasKey: .hasApiKey, status: .apiKeyStatus, platform: .deploymentInfo.platform}'
 
-### Otimizações Implementadas
-1. **Cache Diário**: Reduz 96% das chamadas API
-2. **Rate Limiting**: Evita bloqueios da API
-3. **Lazy Loading**: Dados carregados sob demanda
-4. **Fallback**: Sistema nunca fica indisponível
-5. **localStorage**: Persiste dados entre sessões
+# Expected result:
+# {
+#   "hasKey": true,
+#   "status": "working",  
+#   "platform": "Vercel"
+# }
+```
 
-## 🔒 Tratamento de Erros
+### Deploy Checklist
+- [ ] API key configured in Vercel
+- [ ] `.env.local` in `.gitignore`
+- [ ] Build without errors: `NODE_ENV=production npm run build`
+- [ ] API key test: `curl .../api/test-env`
+- [ ] Functionality test: Calculate VaR for CNY/BRL
+- [ ] Verify daily cache working
+- [ ] Confirm rate limiting active
 
-### Cenários Cobertos
+## 📈 Performance and Optimizations
+
+### Performance Metrics
+- **First load**: ~2-3 seconds (with real data)
+- **Subsequent loads**: ~0.1 seconds (cache)
+- **API calls per day**: 1 per currency pair
+- **Local storage**: ~1KB per currency pair
+
+### Implemented Optimizations
+1. **Daily Cache**: Reduces 96% of API calls
+2. **Rate Limiting**: Prevents API blocks
+3. **Lazy Loading**: Data loaded on demand
+4. **Fallback**: System never becomes unavailable
+5. **localStorage**: Persists data between sessions
+
+## 🔒 Error Handling
+
+### Covered Scenarios
 ```typescript
 try {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`HTTP ${response.status}`);
   }
-  // Processar dados...
+  // Process data...
 } catch (error) {
   console.warn('API unavailable, using fallback data');
   return generateFallbackVolatility(pair);
 }
 ```
 
-**Tipos de Erro**:
+**Error Types**:
 - API Rate Limit exceeded
 - Network connectivity issues
 - Invalid API response format
 - Missing or invalid API key
 
-### Estratégias de Recuperação
-1. **Fallback Data**: Dados sintéticos baseados em pares similares
-2. **Retry Logic**: Tentativas automáticas com backoff
-3. **User Feedback**: Mensagens claras sobre o status
-4. **Graceful Degradation**: Sistema funciona mesmo offline
+### Recovery Strategies
+1. **Fallback Data**: Synthetic data based on similar pairs
+2. **Retry Logic**: Automatic attempts with backoff
+3. **User Feedback**: Clear messages about status
+4. **Graceful Degradation**: System works even offline
 
-## 🎯 Casos de Teste
+## 🎯 Test Cases
 
-### Cenários de Teste Manual
-1. **API Funcional**: Dados reais carregados corretamente
-2. **API Indisponível**: Fallback acionado automaticamente
-3. **Rate Limit**: Sistema aguarda automaticamente
-4. **Cache Expirado**: Dados atualizados no próximo acesso
-5. **Múltiplos Pares**: Cache independente por moeda
+### Manual Test Scenarios
+1. **Functional API**: Real data loaded correctly
+2. **API Unavailable**: Fallback triggered automatically
+3. **Rate Limit**: System waits automatically
+4. **Expired Cache**: Data updated on next access
+5. **Multiple Pairs**: Independent cache per currency
 
-### Validação dos Cálculos
-```typescript
-// Teste de VaR para USD/BRL
-const testVaR = calculateVaR(
-  1000000,  // R$ 1M de exposição
-  20,       // 20% de volatilidade
-  30,       // 30 dias
-  0.95      // 95% confiança
-);
-// Resultado esperado: ~R$ 56,980
+### API Key Test (`/api/test-env`)
+```bash
+# Local test
+curl http://localhost:3001/api/test-env | jq '.apiKeyStatus'
+
+# Production test
+curl https://your-project.vercel.app/api/test-env | jq '.apiKeyStatus'
+
+# Expected results:
+# "working" - API key working
+# "invalid" - Invalid API key
+# "rate_limited" - Call limit reached
+# "not_configured" - API key not configured
 ```
 
----
+### Calculation Validation
+```typescript
+// VaR test for CNY/BRL (based on real case)
+const testVaR = calculateVaR(
+  1554000,  // R$ 1.554M exposure
+  11.5,     // 11.5% real volatility
+  60,       // 60 days
+  0.95      // 95% confidence
+);
+// Expected result: R$ 143,447
 
-*Esta documentação técnica demonstra a profundidade e qualidade profissional da implementação, ideal para apresentação em entrevistas técnicas no setor financeiro.*
+// Annualized volatility test
+const testVolatility = calculateAnnualizedVolatility([
+  0.7750, 0.7760, 0.7755, 0.7770, 0.7765, // example prices
+  0.7780, 0.7775, 0.7785, 0.7790, 0.7795
+]);
+// Expected result: ~8-15% (data dependent)
+```
+
+## 🔑 API Key Testing and Validation
+
+### Diagnostic Endpoint (`/api/test-env`)
+
+The system includes a specialized endpoint for testing and diagnosing Alpha Vantage API key status in both development and production environments.
+
+#### Endpoint Implementation
+```typescript
+// src/app/api/test-env/route.ts
+export async function GET() {
+  const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  // Test the API key by making a real call
+  const testResponse = await fetch(
+    `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=${apiKey}`
+  );
+  
+  return NextResponse.json({
+    hasApiKey: !!apiKey,
+    keyLength: apiKey?.length || 0,
+    keyPreview: isDevelopment ? `${apiKey.substring(0, 4)}...` : 'Hidden',
+    apiKeyStatus: 'working' | 'invalid' | 'rate_limited' | 'network_error',
+    environment: process.env.NODE_ENV,
+    deploymentInfo: {
+      platform: process.env.VERCEL ? 'Vercel' : 'Local',
+      region: process.env.VERCEL_REGION || 'localhost'
+    }
+  });
+}
+```
+
+### Test Commands
+
+#### 1. Local Test (Development)
+```bash
+# Method 1: curl
+curl http://localhost:3001/api/test-env | jq
+
+# Method 2: wget
+wget -qO- http://localhost:3001/api/test-env | jq
+
+# Method 3: httpie (if installed)
+http GET localhost:3001/api/test-env
+```
+
+#### 2. Production Test
+```bash
+# Replace with your Vercel URL
+curl https://your-project.vercel.app/api/test-env | jq
+
+# Example with real domain
+curl https://fx-calculator-omega.vercel.app/api/test-env | jq
+```
+
+### Result Interpretation
+
+#### ✅ **API Key Working Correctly**
+```json
+{
+  "hasApiKey": true,
+  "keyLength": 16,
+  "keyPreview": "5M4D...4257",  // Only in development
+  "environment": "development",
+  "timestamp": "2025-08-01T01:07:10.123Z",
+  "apiKeyStatus": "working",
+  "apiTestResult": "API key is functional",
+  "deploymentInfo": {
+    "platform": "Local",
+    "region": "localhost"
+  }
+}
+```
+
+#### ❌ **Invalid API Key**
+```json
+{
+  "hasApiKey": true,
+  "keyLength": 16,
+  "keyPreview": "Hidden in production",
+  "environment": "production",
+  "apiKeyStatus": "invalid",
+  "apiTestResult": "Invalid API call. Please retry or visit the documentation...",
+  "deploymentInfo": {
+    "platform": "Vercel",
+    "region": "iad1"
+  }
+}
+```
+
+#### ⚠️ **Rate Limit Reached**
+```json
+{
+  "hasApiKey": true,
+  "keyLength": 16,
+  "keyPreview": "Hidden in production",
+  "apiKeyStatus": "rate_limited",
+  "apiTestResult": "Rate limit reached",
+  "deploymentInfo": {
+    "platform": "Vercel",
+    "region": "iad1"
+  }
+}
+```
+
+#### 🚫 **API Key Not Configured**
+```json
+{
+  "hasApiKey": false,
+  "keyLength": 0,
+  "keyPreview": "Hidden in production",
+  "apiKeyStatus": "not_configured",
+  "apiTestResult": null,
+  "deploymentInfo": {
+    "platform": "Vercel",
+    "region": "iad1"
+  }
+}
+```
+
+### Automated Test Script
+
+#### Complete Test (Local + Production)
+The project includes an automated bash script to test the API key:
+
+```bash
+# Run the test script
+./test-api-key.sh
+
+# Or specify custom production URL
+./test-api-key.sh https://my-project.vercel.app
+```
+
+**Example output:**
+```
+🔍 Testing Alpha Vantage API Key...
+==================================
+
+📍 Testing Local (Development):
+URL: http://localhost:3001/api/test-env
+   Status: working
+   Has Key: true
+   Platform: Local
+   Environment: development
+   Test Result: API key is functional
+   ✅ API Key working perfectly!
+
+📍 Testing Production:
+URL: https://fx-calculator.vercel.app/api/test-env
+   Status: working
+   Has Key: true
+   Platform: Vercel
+   Environment: production
+   Test Result: API key is functional
+   ✅ API Key working perfectly!
+
+📊 Test Summary:
+==================
+🎉 Success! API Key working in both environments
+   ✅ Local: OK
+   ✅ Production: OK
+```
+
+#### Individual Manual Test
+```bash
+# Local test
+curl http://localhost:3001/api/test-env | jq
+
+# Production test
+curl https://your-project.vercel.app/api/test-env | jq
+```
+
+### Continuous Monitoring
+
+#### Healthcheck Endpoint
+```bash
+# Add to your monitoring/CI
+curl -f https://your-project.vercel.app/api/test-env || exit 1
+```
+
+#### Notification Webhook
+```bash
+# Example with Slack/Discord webhook
+API_STATUS=$(curl -s https://your-project.vercel.app/api/test-env | jq -r '.apiKeyStatus')
+
+if [ "$API_STATUS" != "working" ]; then
+    curl -X POST -H 'Content-type: application/json' \
+        --data '{"text":"🚨 FX Calculator API Key failed: '$API_STATUS'"}' \
+        YOUR_SLACK_WEBHOOK_URL
+fi
+```
+
+### Troubleshooting
+
+#### Problem: "API Key not configured"
+```bash
+# 1. Check local file
+cat .env.local | grep ALPHA_VANTAGE_API_KEY
+
+# 2. Check in Vercel (via CLI)
+vercel env ls
+
+# 3. Add variable in Vercel
+vercel env add ALPHA_VANTAGE_API_KEY
+```
+
+#### Problem: "Rate limit reached"
+```bash
+# Wait 1 minute and test again
+sleep 60 && curl http://localhost:3001/api/test-env | jq '.apiKeyStatus'
+```
+
+#### Problem: "Network error"
+```bash
+# Test direct connectivity with Alpha Vantage
+curl "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=EUR&apikey=demo"
+```
+
+### CI/CD Integration
+
+#### GitHub Actions
+```yaml
+# .github/workflows/test-api.yml
+name: Test API Key
+on: [push, pull_request]
+
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test API Key
+        run: |
+          RESPONSE=$(curl -s ${{ secrets.VERCEL_URL }}/api/test-env)
+          STATUS=$(echo $RESPONSE | jq -r '.apiKeyStatus')
+          if [ "$STATUS" != "working" ]; then
+            echo "❌ API Key test failed: $STATUS"
+            exit 1
+          fi
+          echo "✅ API Key is working"
+```
+
+### Endpoint Security
+
+#### Security Features
+- **Development**: Shows API key preview (first 4 + last 4 characters)
+- **Production**: Never exposes the complete API key
+- **Logs**: Does not record API keys in logs
+- **Rate Limiting**: Respects Alpha Vantage limits
+- **Error Handling**: Handles all possible error scenarios
+
+#### Security Recommendations
+1. **Remove in production**: Consider removing the endpoint after initial tests
+2. **Authentication**: Add authentication if keeping in production
+3. **IP Whitelist**: Restrict access by IP if necessary
+4. **Audit Logs**: Record who accesses the endpoint

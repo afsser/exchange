@@ -1,148 +1,148 @@
-# 📚 Índice de Documentação - FX Exposure Calculator
+# 📚 Documentation Index - FX Exposure Calculator
 
-## 🎯 Documentação Principal
+## 🎯 Main Documentation
 
 ### 1. [README.md](./README.md)
-**Visão Geral do Projeto**
-- Características principais
-- Caso de uso resumido
-- Instruções de setup e execução
-- Arquitetura do sistema
-- Valor empresarial
+**Project Overview**
+- Key features
+- Summarized use case
+- Setup and execution instructions
+- System architecture
+- Business value
 
 ### 2. [BUSINESS_CASE_EXAMPLE.md](./BUSINESS_CASE_EXAMPLE.md)
-**Caso de Uso Empresarial Detalhado**
-- TechBrasil Importadora: exemplo real de ¥ 2.000.000
-- Análise completa de risco cambial
-- Cálculos de VaR com dados reais
-- Decisão de hedge e justificativa
-- Instrumentos financeiros disponíveis
-- Monitoramento contínuo
+**Detailed Business Use Case**
+- TechBrasil Importer: real example of ¥ 2,000,000
+- Complete foreign exchange risk analysis
+- VaR calculations with real data
+- Hedge decision and justification
+- Available financial instruments
+- Continuous monitoring
 
 ### 3. [TECHNICAL_DOCUMENTATION.md](./TECHNICAL_DOCUMENTATION.md)
-**Documentação Técnica Completa**
-- Arquitetura detalhada do sistema
-- Algoritmos financeiros (volatilidade e VaR)
-- Sistema de cache e rate limiting
-- Integração Alpha Vantage API
-- Performance e otimizações
-- Tratamento de erros e testes
+**Complete Technical Documentation**
+- Detailed system architecture
+- Financial algorithms (volatility and VaR)
+- Cache system and rate limiting
+- Alpha Vantage API integration
+- Performance and optimizations
+- Error handling and testing
 
 ### 4. [ALPHA_VANTAGE_SETUP.md](./ALPHA_VANTAGE_SETUP.md)
-**Configuração da API**
-- Instruções para obter API key
-- Configuração do ambiente
-- Limitações e best practices
+**API Configuration**
+- Instructions to obtain API key
+- Environment setup
+- Limitations and best practices
 - Troubleshooting
 
-## 🚀 Para Entrevistas
+## 🚀 For Interviews
 
-### 📊 **Demonstração Prática**
-1. **Abra**: [README.md](./README.md) - Visão geral
-2. **Execute**: O projeto localmente
-3. **Explique**: Caso TechBrasil ([exemplo](./BUSINESS_CASE_EXAMPLE.md))
-4. **Detalhe**: Implementação técnica ([docs](./TECHNICAL_DOCUMENTATION.md))
+### 📊 **Practical Demonstration**
+1. **Open**: [README.md](./README.md) - Overview
+2. **Run**: The project locally
+3. **Explain**: TechBrasil case ([example](./BUSINESS_CASE_EXAMPLE.md))
+4. **Detail**: Technical implementation ([docs](./TECHNICAL_DOCUMENTATION.md))
 
-### 🎯 **Pontos Principais para Destacar**
+### 🎯 **Key Points to Highlight**
 
-#### Valor de Negócio
-- ✅ **Quantificação do risco**: VaR baseado em dados reais
-- ✅ **Decisões informadas**: Base científica para hedge
-- ✅ **ROI claro**: R$ 7.850 para eliminar risco de R$ 89.250
-- ✅ **Compliance**: Práticas padrão da indústria financeira
+#### Business Value
+- ✅ **Risk quantification**: VaR based on real data
+- ✅ **Informed decisions**: Scientific basis for hedge
+- ✅ **Clear ROI**: R$ 7,850 to eliminate risk of R$ 89,250
+- ✅ **Compliance**: Financial industry standard practices
 
-#### Competência Técnica
-- ✅ **Integração de APIs**: Alpha Vantage com rate limiting
-- ✅ **Cálculos financeiros**: Volatilidade e VaR corretos
-- ✅ **Cache inteligente**: Otimização automática
-- ✅ **UX profissional**: Interface clara e informativa
+#### Technical Competence
+- ✅ **API integration**: Alpha Vantage with rate limiting
+- ✅ **Financial calculations**: Correct volatility and VaR
+- ✅ **Smart cache**: Automatic optimization
+- ✅ **Professional UX**: Clear and informative interface
 
-#### Arquitetura de Software
-- ✅ **Next.js/TypeScript**: Stack moderna e robusta
-- ✅ **Error handling**: Fallbacks e recuperação graceful
-- ✅ **Performance**: Cache diário reduz 96% das calls
-- ✅ **Monitoring**: Logs e indicadores visuais
+#### Software Architecture
+- ✅ **Next.js/TypeScript**: Modern and robust stack
+- ✅ **Error handling**: Fallbacks and graceful recovery
+- ✅ **Performance**: Daily cache reduces 96% of calls
+- ✅ **Monitoring**: Logs and visual indicators
 
-## 🔍 Navegação Rápida
+## 🔍 Quick Navigation
 
-### Por Audiência
+### By Audience
 
-#### **Para CFO/Diretor Financeiro**
-→ [Caso TechBrasil](./BUSINESS_CASE_EXAMPLE.md#-interpretação-dos-resultados)
+#### **For CFO/Financial Director**
+→ [TechBrasil Case](./BUSINESS_CASE_EXAMPLE.md#-results-interpretation)
 
-#### **Para Desenvolvedor/Arquiteto**
-→ [Documentação Técnica](./TECHNICAL_DOCUMENTATION.md#️-arquitetura-do-sistema)
+#### **For Developer/Architect**
+→ [Technical Documentation](./TECHNICAL_DOCUMENTATION.md#️-system-architecture)
 
-#### **Para Analista de Risco**
-→ [Cálculos Financeiros](./TECHNICAL_DOCUMENTATION.md#-algoritmos-financeiros)
+#### **For Risk Analyst**
+→ [Financial Calculations](./TECHNICAL_DOCUMENTATION.md#-financial-algorithms)
 
-#### **Para DevOps/SRE**
-→ [Setup e Deploy](./ALPHA_VANTAGE_SETUP.md)
+#### **For DevOps/SRE**
+→ [Setup and Deploy](./ALPHA_VANTAGE_SETUP.md)
 
-### Por Funcionalidade
+### By Functionality
 
 #### **API Integration**
-→ [Alpha Vantage Service](./TECHNICAL_DOCUMENTATION.md#-integração-alpha-vantage-api)
+→ [Alpha Vantage Service](./TECHNICAL_DOCUMENTATION.md#-alpha-vantage-api-integration)
 
 #### **Financial Calculations**
-→ [Volatility & VaR](./TECHNICAL_DOCUMENTATION.md#cálculo-de-volatilidade)
+→ [Volatility & VaR](./TECHNICAL_DOCUMENTATION.md#volatility-calculation)
 
 #### **Caching Strategy**
-→ [Daily Cache System](./TECHNICAL_DOCUMENTATION.md#-sistema-de-cache)
+→ [Daily Cache System](./TECHNICAL_DOCUMENTATION.md#-cache-system)
 
 #### **User Experience**
-→ [Interface Features](./README.md#-funcionalidades-técnicas)
+→ [Interface Features](./README.md#-technical-features)
 
-## 📈 Roadmap de Apresentação
+## 📈 Presentation Roadmap
 
-### **5 minutos** - Pitch Executivo
-1. **Problema**: Risco cambial não quantificado (30s)
-2. **Solução**: Calculator com dados reais (60s)
-3. **Exemplo**: TechBrasil case (2min)
-4. **Valor**: R$ 7k para eliminar R$ 89k de risco (30s)
-5. **Demo**: Interface funcionando (2min)
+### **5 minutes** - Executive Pitch
+1. **Problem**: Unquantified foreign exchange risk (30s)
+2. **Solution**: Calculator with real data (60s)
+3. **Example**: TechBrasil case (2min)
+4. **Value**: R$ 7k to eliminate R$ 89k risk (30s)
+5. **Demo**: Working interface (2min)
 
-### **15 minutos** - Apresentação Técnica
-1. **Contexto de negócio** (3min)
-2. **Arquitetura do sistema** (4min)
-3. **Implementação detalhada** (5min)
-4. **Demo ao vivo** (3min)
+### **15 minutes** - Technical Presentation
+1. **Business context** (3min)
+2. **System architecture** (4min)
+3. **Detailed implementation** (5min)
+4. **Live demo** (3min)
 
-### **30 minutos** - Deep Dive Técnico
-1. **Business case completo** (5min)
-2. **Arquitetura e design decisions** (8min)
-3. **Código ao vivo** (10min)
-4. **Testes e edge cases** (4min)
+### **30 minutes** - Technical Deep Dive
+1. **Complete business case** (5min)
+2. **Architecture and design decisions** (8min)
+3. **Live code** (10min)
+4. **Tests and edge cases** (4min)
 5. **Q&A** (3min)
 
-## 🎯 Destacar para Ebury
+## 🎯 Highlight for Ebury
 
-### **Alinhamento com Ebury's Business**
-- ✅ **FX Risk Management**: Core business do Ebury
+### **Alignment with Ebury's Business**
+- ✅ **FX Risk Management**: Ebury's core business
 - ✅ **SME Focus**: TechBrasil = typical Ebury client
-- ✅ **Data-Driven**: Decisions baseadas em market data
+- ✅ **Data-Driven**: Decisions based on market data
 - ✅ **Technology**: Modern stack, professional quality
 
-### **Demonstrar Expertise**
-- ✅ **Financial Markets**: Understanding de volatility, VaR
+### **Demonstrate Expertise**
+- ✅ **Financial Markets**: Understanding of volatility, VaR
 - ✅ **Risk Management**: Professional frameworks
 - ✅ **Software Engineering**: Production-ready code
 - ✅ **Product Thinking**: End-to-end solution
 
 ---
 
-## 🚀 Quick Start para Demo
+## 🚀 Quick Start for Demo
 
 ```bash
 cd /app
 npm install
 npm run dev
-# Abrir http://localhost:3000
-# Testar com: Exposure=1570000, Pair=CNY/BRL, Days=90
+# Open http://localhost:3000
+# Test with: Exposure=1570000, Pair=CNY/BRL, Days=90
 ```
 
-**Resultado esperado**: VaR ≈ R$ 89.250 com dados reais
+**Expected result**: VaR ≈ R$ 89,250 with real data
 
 ---
 
-*Esta documentação completa demonstra um projeto de nível empresarial pronto para impressionar em entrevistas no setor financeiro.*
+*This complete documentation demonstrates an enterprise-level project ready to impress in financial sector interviews.*

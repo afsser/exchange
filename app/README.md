@@ -1,23 +1,23 @@
-# FX Exposure Calculator - Calculadora de Exposição Cambial
+# FX Exposure Calculator - Foreign Exchange Risk Management Tool
 
-Sistema profissional de análise de risco cambial com dados de volatilidade em tempo real para gestão financeira empresarial.
+Professional foreign exchange risk analysis system with real-time volatility data for enterprise financial management.
 
-## 🎯 Características Principais
+## 🎯 Key Features
 
-- **Dados Reais de Mercado**: Integração com Alpha Vantage API
-- **Cálculo de VaR**: Value at Risk baseado em volatilidade histórica
-- **Cache Inteligente**: Otimização automática de chamadas API
-- **Rate Limiting**: Controle de requisições (5 calls/minuto)
-- **Transparência Total**: Detalhamento completo dos cálculos matemáticos
+- **Real Market Data**: Integration with Alpha Vantage API
+- **VaR Calculation**: Value at Risk based on historical volatility
+- **Smart Caching**: Automatic API call optimization
+- **Rate Limiting**: Request control (5 calls/minute)
+- **Full Transparency**: Complete mathematical calculation breakdown
 
-## 📊 Caso de Uso Empresarial
+## 📊 Business Use Case
 
-**Exemplo Real**: TechBrasil Importadora com exposição de ¥ 2.000.000
-- **VaR Calculado**: R$ 89.250 (5.7% da exposição)
-- **Decisão**: Hedge de R$ 7.850 para eliminar risco de R$ 89k
-- **Resultado**: Gestão profissional de risco cambial
+**Real Example**: TechBrasil Importer with ¥ 2,000,000 exposure
+- **Calculated VaR**: R$ 89,250 (5.7% of exposure)
+- **Decision**: R$ 7,850 hedge to eliminate R$ 89k risk
+- **Result**: Professional foreign exchange risk management
 
-👉 **Veja o exemplo completo em**: [BUSINESS_CASE_EXAMPLE.md](./BUSINESS_CASE_EXAMPLE.md)
+👉 **See complete example at**: [BUSINESS_CASE_EXAMPLE.md](./BUSINESS_CASE_EXAMPLE.md)
 
 ## 🚀 Getting Started
 
@@ -25,83 +25,83 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-### Configuração da API
+### API Configuration
 
 1. **Alpha Vantage API Key**:
    ```bash
-   # Crie o arquivo .env.local
+   # Create .env.local file
    ALPHA_VANTAGE_API_KEY=your_api_key_here
    ```
 
-2. **Obter API Key**: [Alpha Vantage Free API](https://www.alphavantage.co/support/#api-key)
+2. **Get API Key**: [Alpha Vantage Free API](https://www.alphavantage.co/support/#api-key)
 
-👉 **Setup completo em**: [ALPHA_VANTAGE_SETUP.md](./ALPHA_VANTAGE_SETUP.md)
+👉 **Complete setup at**: [ALPHA_VANTAGE_SETUP.md](./ALPHA_VANTAGE_SETUP.md)
 
-### Executar o Projeto
+### Run the Project
 
 ```bash
-# Instalar dependências
+# Install dependencies
 npm install
 
-# Executar em desenvolvimento
+# Run in development
 npm run dev
 
-# Build para produção
+# Build for production
 NODE_ENV=production npm run build
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) para usar a calculadora.
+Access [http://localhost:3000](http://localhost:3000) to use the calculator.
 
-## 🔧 Funcionalidades Técnicas
+## 🔧 Technical Features
 
-### Integração Alpha Vantage
-- **Rate Limiting**: 5 chamadas por minuto (automático)
-- **Cache Diário**: Dados de volatilidade persistem por 24h
-- **Fallback**: Dados sintéticos quando API indisponível
-- **Monitoramento**: Contador de chamadas em tempo real
+### Alpha Vantage Integration
+- **Rate Limiting**: 5 calls per minute (automatic)
+- **Daily Cache**: Volatility data persists for 24h
+- **Fallback**: Synthetic data when API unavailable
+- **Monitoring**: Real-time call counter
 
-### Cálculos Financeiros
-- **Volatilidade Real**: Baseada em 30 dias de dados históricos
-- **VaR (Value at Risk)**: Fórmula padrão da indústria
-- **Dias Úteis**: 252 dias por ano (padrão financeiro)
-- **Transparência**: Todos os cálculos detalhados na interface
+### Financial Calculations
+- **Real Volatility**: Based on 30 days of historical data
+- **VaR (Value at Risk)**: Industry standard formula
+- **Trading Days**: 252 days per year (financial standard)
+- **Transparency**: All calculations detailed in interface
 
-### Interface do Usuário
-- **Controle Manual**: Botão "Pre-calculate Volatility"
-- **Indicadores Visuais**: Status da fonte de dados
-- **Cálculos Detalhados**: Seção com fórmulas e valores
-- **Feedback em Tempo Real**: Loading states e mensagens
+### User Interface
+- **Manual Control**: "Pre-calculate Volatility" button
+- **Visual Indicators**: Data source status
+- **Detailed Calculations**: Section with formulas and values
+- **Real-time Feedback**: Loading states and messages
 
-## 📈 Arquitetura do Sistema
+## 📈 System Architecture
 
 ```
 /app
 ├── src/lib/alphaVantage.ts     # Serviço principal + rate limiter
 ├── src/app/api/volatility/     # API endpoint com cache
-├── src/app/exposure-calculator/ # Interface principal
-└── .env.local                  # Configuração da API key
+├── src/app/exposure-calculator/ # Main interface
+└── .env.local                  # API key configuration
 ```
 
-## 🎯 Valor Empresarial
+## 🎯 Business Value
 
-**Antes (sem a ferramenta)**:
-- ❌ Decisões baseadas em intuição
-- ❌ Surpresas no fluxo de caixa
-- ❌ Gestão de risco inadequada
+**Before (without the tool)**:
+- ❌ Decisions based on intuition
+- ❌ Cash flow surprises
+- ❌ Inadequate risk management
 
-**Depois (com o FX Calculator)**:
-- ✅ Decisões baseadas em dados reais
-- ✅ Risco quantificado e controlado
-- ✅ Estratégia de hedge profissional
-- ✅ Conformidade com best practices
+**After (with FX Calculator)**:
+- ✅ Decisions based on real data
+- ✅ Quantified and controlled risk
+- ✅ Professional hedge strategy
+- ✅ Best practices compliance
 
-## 📚 Documentação
+## 📚 Documentation
 
-- 📋 **[Índice Completo](./INDEX.md)** - Navegação por toda a documentação
-- 🏢 **[Caso de Uso Empresarial](./BUSINESS_CASE_EXAMPLE.md)** - Exemplo detalhado da TechBrasil
-- 🔧 **[Documentação Técnica](./TECHNICAL_DOCUMENTATION.md)** - Arquitetura e implementação
-- ⚙️ **[Setup Alpha Vantage](./ALPHA_VANTAGE_SETUP.md)** - Configuração da API
+- 📋 **[Complete Index](./INDEX.md)** - Navigation through all documentation
+- 🏢 **[Business Use Case](./BUSINESS_CASE_EXAMPLE.md)** - Detailed TechBrasil example
+- 🔧 **[Technical Documentation](./TECHNICAL_DOCUMENTATION.md)** - Architecture and implementation
+- ⚙️ **[Alpha Vantage Setup](./ALPHA_VANTAGE_SETUP.md)** - API configuration
 
 ---
 
-*Desenvolvido para demonstrar expertise em gestão de risco financeiro e integração de APIs de dados de mercado.*
+*Developed to demonstrate expertise in financial risk management and market data API integration.*

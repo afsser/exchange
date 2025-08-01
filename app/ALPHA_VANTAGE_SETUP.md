@@ -1,58 +1,40 @@
 # Alpha Vantage API Integration
 
-## Configuração da API Key
+## API Key Configuration
 
-Este projeto utiliza a **Alpha Vantage API** para obter dados de volatilidade cambial em tempo real.
+This project uses the **Alpha Vantage API** to obtain real-time foreign exchange volatility data.
 
-### 1. Obter API Key Gratuita
+### 1. Free API Limits
 
-1. Acesse: https://www.alphavantage.co/support/#api-key
-2. Preencha o formulário com seu email
-3. Você receberá sua API key gratuita instantaneamente
+- **5 calls per minute**
+- **500 calls per day**
+- Historical data: up to 20+ years
+- Support for 150+ currencies
 
-### 2. Configurar Variável de Ambiente
+### 2. Implemented Features
 
-1. Crie/edite o arquivo `.env.local` na raiz do projeto:
-```bash
-ALPHA_VANTAGE_API_KEY=sua_api_key_aqui
-```
+#### ✅ Smart Rate Limiting
+- Automatic control of 5 calls/minute
+- Fallback to static data when limit exceeded
+- 5-minute cache to reduce calls
 
-2. Reinicie o servidor de desenvolvimento:
-```bash
-npm run dev
-```
+#### ✅ Real Volatility Analysis
+- Calculation based on 30 days of historical data
+- Annualized volatility (industry standard)
+- Automatic trend analysis
 
-### 3. Limites da API Gratuita
+#### ✅ Advanced Metrics
+- **Volatility**: Annualized standard deviation of returns
+- **Trend**: Direction and percentage change (30 days)
+- **Price Range**: Minimum, maximum and current
+- **Risk Score**: Automatic classification (Low/Medium/High)
 
-- **5 calls por minuto**
-- **500 calls por dia**
-- Dados históricos: até 20+ anos
-- Suporte a 150+ moedas
+#### ✅ Error Handling
+- Smart fallback to historical data
+- Visual indicators of data source
+- Informative messages about rate limits
 
-### 4. Funcionalidades Implementadas
-
-#### ✅ Rate Limiting Inteligente
-- Controle automático de 5 calls/minuto
-- Fallback para dados estáticos quando limite excedido
-- Cache de 5 minutos para reduzir chamadas
-
-#### ✅ Análise de Volatilidade Real
-- Cálculo baseado em 30 dias de dados históricos
-- Volatilidade anualizada (padrão da indústria)
-- Análise de tendência automática
-
-#### ✅ Métricas Avançadas
-- **Volatility**: Desvio padrão anualizado dos retornos
-- **Trend**: Direção e percentual de mudança (30 dias)
-- **Price Range**: Mínimo, máximo e atual
-- **Risk Score**: Classificação automática (Low/Medium/High)
-
-#### ✅ Tratamento de Erros
-- Fallback inteligente para dados históricos
-- Indicadores visuais de fonte de dados
-- Mensagens informativas sobre rate limits
-
-### 5. Exemplo de Resposta da API
+### 3. API Response Example
 
 ```json
 {
@@ -83,84 +65,3 @@ npm run dev
   "remainingCalls": 4
 }
 ```
-
-### 6. Melhorias para Produção
-
-Para um ambiente de produção, considere:
-
-1. **Alpha Vantage Premium** ($49.99/mês):
-   - 75 calls/minuto
-   - 75,000 calls/mês
-   - Dados intraday
-
-2. **Cache Redis**:
-   - Cache distribuído para múltiplas instâncias
-   - TTL configurável por par de moedas
-
-3. **Fallback APIs**:
-   - Integração com múltiplas fontes (Fixer.io, CurrencyAPI)
-   - Balanceamento de carga entre APIs
-
-4. **Monitoring**:
-   - Logs estruturados
-   - Métricas de usage da API
-   - Alertas de rate limit
-
-### 7. Valor para Recrutadores
-
-Esta implementação demonstra:
-
-- ✅ **Conhecimento Financeiro**: Cálculos de volatilidade padrão da indústria
-- ✅ **Arquitetura Robusta**: Rate limiting, cache, fallbacks
-- ✅ **UX Financeira**: Indicadores visuais, contexto de risco
-- ✅ **Código Production-Ready**: Tratamento de erros, validações
-- ✅ **Integração de APIs**: Consumo responsável de APIs externas
-
-## Troubleshooting
-
-### Problema Específico: CNY/BRL usando dados de fallback
-
-Se você estiver testando especificamente o **par CNY/BRL** (como no exemplo da TechBrasil Importadora) e vendo:
-```
-⚠️ API error - using fallback data - Using fallback data
-```
-
-**Possíveis causas:**
-
-1. **API Key não configurada**: 
-   - Verifique se `.env.local` tem uma API key real ao invés de `demo`
-   - Obtenha sua API key gratuita em: https://www.alphavantage.co/support/#api-key
-
-2. **Rate Limit excedido**:
-   - API gratuita permite apenas 5 calls/minuto
-   - Sistema automaticamente usa fallback quando limite é atingido
-
-3. **Par CNY/BRL com dados limitados**:
-   - Alpha Vantage pode ter dados limitados para alguns pares emergentes
-   - Sistema usa fallback inteligente com volatilidade de **18.4%** para CNY/BRL
-
-**Como resolver:**
-```bash
-# 1. Configure sua API key real em .env.local
-ALPHA_VANTAGE_API_KEY=sua_api_key_aqui
-
-# 2. Reinicie o servidor
-npm run dev
-
-# 3. Teste novamente o cálculo de volatilidade
-```
-
-### API Key não está funcionando
-- Verifique se a variável `ALPHA_VANTAGE_API_KEY` está definida em `.env.local`
-- Reinicie o servidor após adicionar a variável
-- Teste a API key diretamente: `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=SUA_API_KEY`
-
-### Rate Limit Excedido
-- O sistema automaticamente usa dados fallback
-- Aguarde 1 minuto para nova tentativa
-- Considere upgrade para plano Premium
-
-### Dados não carregam
-- Verifique conexão com internet
-- Alguns pares de moedas podem não estar disponíveis na Alpha Vantage
-- Sistema automaticamente usa dados estimados como fallback
