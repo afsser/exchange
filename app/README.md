@@ -1,36 +1,107 @@
+# FX Exposure Calculator - Calculadora de Exposição Cambial
+
+Sistema profissional de análise de risco cambial com dados de volatilidade em tempo real para gestão financeira empresarial.
+
+## 🎯 Características Principais
+
+- **Dados Reais de Mercado**: Integração com Alpha Vantage API
+- **Cálculo de VaR**: Value at Risk baseado em volatilidade histórica
+- **Cache Inteligente**: Otimização automática de chamadas API
+- **Rate Limiting**: Controle de requisições (5 calls/minuto)
+- **Transparência Total**: Detalhamento completo dos cálculos matemáticos
+
+## 📊 Caso de Uso Empresarial
+
+**Exemplo Real**: TechBrasil Importadora com exposição de ¥ 2.000.000
+- **VaR Calculado**: R$ 89.250 (5.7% da exposição)
+- **Decisão**: Hedge de R$ 7.850 para eliminar risco de R$ 89k
+- **Resultado**: Gestão profissional de risco cambial
+
+👉 **Veja o exemplo completo em**: [BUSINESS_CASE_EXAMPLE.md](./BUSINESS_CASE_EXAMPLE.md)
+
+## 🚀 Getting Started
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-First, run the development server:
+### Configuração da API
+
+1. **Alpha Vantage API Key**:
+   ```bash
+   # Crie o arquivo .env.local
+   ALPHA_VANTAGE_API_KEY=your_api_key_here
+   ```
+
+2. **Obter API Key**: [Alpha Vantage Free API](https://www.alphavantage.co/support/#api-key)
+
+👉 **Setup completo em**: [ALPHA_VANTAGE_SETUP.md](./ALPHA_VANTAGE_SETUP.md)
+
+### Executar o Projeto
 
 ```bash
+# Instalar dependências
+npm install
+
+# Executar em desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build para produção
+NODE_ENV=production npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesse [http://localhost:3000](http://localhost:3000) para usar a calculadora.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Funcionalidades Técnicas
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Integração Alpha Vantage
+- **Rate Limiting**: 5 chamadas por minuto (automático)
+- **Cache Diário**: Dados de volatilidade persistem por 24h
+- **Fallback**: Dados sintéticos quando API indisponível
+- **Monitoramento**: Contador de chamadas em tempo real
 
-## Learn More
+### Cálculos Financeiros
+- **Volatilidade Real**: Baseada em 30 dias de dados históricos
+- **VaR (Value at Risk)**: Fórmula padrão da indústria
+- **Dias Úteis**: 252 dias por ano (padrão financeiro)
+- **Transparência**: Todos os cálculos detalhados na interface
 
-To learn more about Next.js, take a look at the following resources:
+### Interface do Usuário
+- **Controle Manual**: Botão "Pre-calculate Volatility"
+- **Indicadores Visuais**: Status da fonte de dados
+- **Cálculos Detalhados**: Seção com fórmulas e valores
+- **Feedback em Tempo Real**: Loading states e mensagens
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📈 Arquitetura do Sistema
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+/app
+├── src/lib/alphaVantage.ts     # Serviço principal + rate limiter
+├── src/app/api/volatility/     # API endpoint com cache
+├── src/app/exposure-calculator/ # Interface principal
+└── .env.local                  # Configuração da API key
+```
 
-## Deploy on Vercel
+## 🎯 Valor Empresarial
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Antes (sem a ferramenta)**:
+- ❌ Decisões baseadas em intuição
+- ❌ Surpresas no fluxo de caixa
+- ❌ Gestão de risco inadequada
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Depois (com o FX Calculator)**:
+- ✅ Decisões baseadas em dados reais
+- ✅ Risco quantificado e controlado
+- ✅ Estratégia de hedge profissional
+- ✅ Conformidade com best practices
+
+## 📚 Documentação
+
+- 📋 **[Índice Completo](./INDEX.md)** - Navegação por toda a documentação
+- 🏢 **[Caso de Uso Empresarial](./BUSINESS_CASE_EXAMPLE.md)** - Exemplo detalhado da TechBrasil
+- 🔧 **[Documentação Técnica](./TECHNICAL_DOCUMENTATION.md)** - Arquitetura e implementação
+- ⚙️ **[Setup Alpha Vantage](./ALPHA_VANTAGE_SETUP.md)** - Configuração da API
+
+---
+
+*Desenvolvido para demonstrar expertise em gestão de risco financeiro e integração de APIs de dados de mercado.*
