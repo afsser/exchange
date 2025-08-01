@@ -56,22 +56,52 @@ export default function Home() {
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data);
-    } catch {
-      setError("Conversion failed. Try again.");
+    } catch (err) {
+      console.error('Conversion error:', err);
+      setError("Currency conversion failed. Please check your internet connection and try again.");
     } finally {
       setLoading(false);
     }
   }
 
   function formatDate(timestamp: number): string {
-    return new Date(timestamp * 1000).toLocaleString('pt-BR', {
+    return new Date(timestamp * 1000).toLocaleString('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: 'America/Sao_Paulo'
+      timeZone: 'UTC'
     });
+  }
+
+  function formatCurrency(amount: number, currency: string): string {
+    // Handle very large numbers
+    if (amount >= 1000000000000) { // 1 trillion or more
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        notation: 'compact',
+        maximumFractionDigits: 2,
+      }).format(amount);
+    }
+    
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  }
+
+  function formatNumber(amount: number): string {
+    // For exchange rates, we want more precision to show meaningful differences
+    const decimalPlaces = amount < 1 ? 6 : amount < 10 ? 4 : 2;
+    
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
+    }).format(amount);
   }
 
   return (
@@ -115,7 +145,7 @@ export default function Home() {
               {showLimitWarning && (
                 <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-sm">
                   <p className="text-yellow-800 dark:text-yellow-200">
-                    ⚠️ Valor limitado ao máximo suportado: {MAX_AMOUNT.toLocaleString()}
+                    ⚠️ Amount limited to maximum supported value: {MAX_AMOUNT.toLocaleString()}
                   </p>
                 </div>
               )}
@@ -189,13 +219,16 @@ export default function Home() {
                 ❌ {error}
               </p>
             ) : result && result.rates[to] !== undefined ? (
-              <div className="text-center space-y-2">
-                <p className="text-green-600 dark:text-green-400 font-bold text-lg">
-                  💰 {result.amount} {result.base} = {result.rates[to].toFixed(2)} {to}
+              <div className="text-center space-y-3">
+                <p className="text-green-600 dark:text-green-400 font-bold text-xl">
+                  💰 {formatCurrency(result.amount, result.base)} = {formatCurrency(result.rates[to], to)}
                 </p>
                 <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <p>📊 Taxa: 1 {result.base} = {result.rate.toFixed(4)} {to}</p>
-                  <p>🕒 Atualizado: {formatDate(result.time_last_updated)}</p>
+                  <p>📊 Exchange Rate: 1 {result.base} = {formatNumber(result.rate)} {to}</p>
+                  <p>🕒 Last Updated: {formatDate(result.time_last_updated)}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-500">
+                    Data provided by ExchangeRate-API • Real-time rates
+                  </p>
                 </div>
               </div>
             ) : (
