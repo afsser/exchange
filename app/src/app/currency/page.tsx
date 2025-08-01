@@ -206,6 +206,16 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Back to Home */}
+        <div className="text-center mt-8">
+          <Link 
+            href="/"
+            className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            ← Back to Trade Tools
+          </Link>
+        </div>
+
         <footer className="text-center mt-8 text-sm text-gray-600 dark:text-gray-400">
           © {new Date().getFullYear()} Currency Converter
         </footer>

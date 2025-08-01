@@ -157,8 +157,20 @@ export default function ExposureCalculator() {
       return;
     }
     
+    if (exposureData.amount > 1000000000000) {
+      setError('Exposure amount cannot exceed 1 trillion');
+      setLoading(false);
+      return;
+    }
+    
     if (!exposureData.timeHorizon || exposureData.timeHorizon <= 0) {
-      setError('Please enter a valid time horizon');
+      setError('Please enter a valid time horizon (minimum 1 day)');
+      setLoading(false);
+      return;
+    }
+    
+    if (exposureData.timeHorizon > 365) {
+      setError('Time horizon cannot exceed 365 days (1 year)');
       setLoading(false);
       return;
     }
@@ -210,7 +222,7 @@ export default function ExposureCalculator() {
         // Value at Risk calculation (parametric method)
         // VaR = Position × Volatility_adjusted × Z-score (95% confidence = 1.645)
         // Convert annual volatility to time horizon using trading days (252 per year)
-        const tradingDaysInPeriod = Math.min(exposureData.timeHorizon, 252); // Cap at 1 year
+        const tradingDaysInPeriod = Math.min(exposureData.timeHorizon, 365); // Cap at 365 days (1 year max)
         const timeAdjustedVolatility = (volatilityToUse / 100) * Math.sqrt(tradingDaysInPeriod / 252);
         const valueAtRisk = exposureValue * timeAdjustedVolatility * 1.645;
         
@@ -277,6 +289,16 @@ export default function ExposureCalculator() {
   };
 
   const formatCurrency = (amount: number, currency: string) => {
+    // Handle very large numbers by showing them in scientific notation or with abbreviations
+    if (amount >= 1000000000000) { // 1 trillion or more
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        notation: 'compact',
+        maximumFractionDigits: 2,
+      }).format(amount);
+    }
+    
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
@@ -319,17 +341,30 @@ export default function ExposureCalculator() {
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Exposure Amount
+                <span className="text-xs text-slate-400 ml-2">(Max: 1 trillion)</span>
               </label>
               <input
                 type="number"
                 value={exposureData.amount}
-                onChange={(e) => setExposureData(prev => ({ 
-                  ...prev, 
-                  amount: parseFloat(e.target.value) || 0 
-                }))}
+                onChange={(e) => {
+                  const value = parseFloat(e.target.value) || 0;
+                  const limitedValue = Math.min(Math.max(value, 0), 1000000000000); // Max 1 trillion, min 0
+                  setExposureData(prev => ({ 
+                    ...prev, 
+                    amount: limitedValue 
+                  }));
+                }}
+                min="0"
+                max="1000000000000"
+                step="1000"
                 className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400"
-                placeholder="Enter amount"
+                placeholder="Enter amount (max 1 trillion)"
               />
+              {exposureData.amount >= 1000000000000 && (
+                <div className="mt-1 text-xs text-yellow-400">
+                  ⚠️ Maximum exposure amount reached (1 trillion)
+                </div>
+              )}
             </div>
 
             {/* Currency Selectors */}
@@ -500,17 +535,35 @@ export default function ExposureCalculator() {
             <div className="mb-6">
               <label className="block text-sm font-medium text-slate-300 mb-2">
                 Time Horizon (days)
+                <span className="text-xs text-slate-400 ml-2">(Max: 365 days / 1 year)</span>
               </label>
               <input
                 type="number"
                 value={exposureData.timeHorizon}
-                onChange={(e) => setExposureData(prev => ({ 
-                  ...prev, 
-                  timeHorizon: parseInt(e.target.value) || 0 
-                }))}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value) || 0;
+                  const limitedValue = Math.min(Math.max(value, 1), 365); // Max 365 days (1 year), min 1 day
+                  setExposureData(prev => ({ 
+                    ...prev, 
+                    timeHorizon: limitedValue 
+                  }));
+                }}
+                min="1"
+                max="365"
+                step="1"
                 className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-slate-400"
-                placeholder="30"
+                placeholder="30 (max 365 days)"
               />
+              {exposureData.timeHorizon >= 365 && (
+                <div className="mt-1 text-xs text-yellow-400">
+                  ⚠️ Maximum time horizon reached (1 year)
+                </div>
+              )}
+              {exposureData.timeHorizon <= 1 && exposureData.timeHorizon > 0 && (
+                <div className="mt-1 text-xs text-blue-400">
+                  ℹ️ Minimum time horizon is 1 day
+                </div>
+              )}
             </div>
 
             {/* Error Display */}
@@ -522,6 +575,16 @@ export default function ExposureCalculator() {
                 </div>
               </div>
             )}
+
+            {/* Input Limits Info */}
+            <div className="mb-6 p-3 bg-slate-700/30 border border-slate-600/50 rounded-lg">
+              <div className="text-xs text-slate-400 space-y-1">
+                <div className="font-medium text-slate-300 mb-1">Input Limits:</div>
+                <div>• Exposure Amount: 0 to 1 trillion ({exposureData.baseCurrency})</div>
+                <div>• Time Horizon: 1 to 365 days (maximum 1 year)</div>
+                <div className="text-slate-500 mt-1">These limits ensure accurate risk calculations and prevent system overload.</div>
+              </div>
+            </div>
 
             {/* Pre-calculate Volatility Button */}
             {!volatilityData && exposureData.baseCurrency !== exposureData.targetCurrency && (
