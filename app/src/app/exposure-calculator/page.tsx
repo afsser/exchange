@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -276,15 +276,6 @@ export default function ExposureCalculator() {
     }
   };
 
-  const getRiskColor = (level: string) => {
-    switch (level) {
-      case 'Low': return 'text-green-600';
-      case 'Medium': return 'text-yellow-600';
-      case 'High': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
-  };
-
   const formatCurrency = (amount: number, currency: string) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -483,7 +474,7 @@ export default function ExposureCalculator() {
                       Real Market Volatility Calculation Available
                     </div>
                     <div className="text-xs text-blue-200">
-                      Click "Pre-calculate Volatility" to fetch historical price data for {exposureData.baseCurrency}/{exposureData.targetCurrency} and calculate <strong>real volatility</strong> based on 30 days of actual market movements.
+                      Click &quot;Pre-calculate Volatility&quot; to fetch historical price data for {exposureData.baseCurrency}/{exposureData.targetCurrency} and calculate <strong>real volatility</strong> based on 30 days of actual market movements.
                     </div>
                     <div className="text-xs text-blue-300 mt-1">
                       ✨ <strong>Professional Feature:</strong> Uses standard deviation of daily returns (annualized) instead of estimated values.

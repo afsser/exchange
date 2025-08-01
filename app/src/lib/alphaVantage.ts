@@ -82,10 +82,48 @@ export interface VolatilityAnalysis {
 // Daily cache for volatility calculations - recalculates once per day
 interface DailyVolatilityCache {
   [pair: string]: {
-    data: any;
+    data: VolatilityData;
     calculatedDate: string; // YYYY-MM-DD format
     timestamp: number;
   };
+}
+
+interface VolatilityData {
+  from: string;
+  to: string;
+  pair: string;
+  volatility: number;
+  source: string;
+  period: string;
+  confidence: string;
+  trend?: {
+    direction: 'up' | 'down' | 'sideways';
+    percentage: number;
+    description: string;
+  };
+  priceRange?: {
+    min: number;
+    max: number;
+    current: number;
+  };
+  riskScore?: {
+    level: 'low' | 'medium' | 'high';
+    score: number;
+    description: string;
+  };
+  dataPoints?: number;
+  lastUpdated?: string;
+  calculationMethod?: string;
+  cached?: boolean;
+  cacheType?: string;
+  freshCalculation?: boolean;
+  remainingCalls?: number;
+  rateLimitInfo?: {
+    waitTime: number;
+    nextAvailable: Date;
+    remainingCalls: number;
+  };
+  error?: string;
 }
 
 class VolatilityDailyCache {
@@ -114,7 +152,7 @@ class VolatilityDailyCache {
     return dateString === this.getTodayString();
   }
   
-  static get(pair: string): any | null {
+  static get(pair: string): VolatilityData | null {
     const cached = this.cache[pair];
     if (!cached) return null;
     
@@ -129,7 +167,7 @@ class VolatilityDailyCache {
     return null;
   }
   
-  static set(pair: string, data: any): void {
+  static set(pair: string, data: VolatilityData): void {
     this.cache[pair] = {
       data,
       calculatedDate: this.getTodayString(),
@@ -149,7 +187,6 @@ class VolatilityDailyCache {
   }
   
   static clearOldEntries(): void {
-    const today = this.getTodayString();
     let hasChanges = false;
     
     for (const pair in this.cache) {
@@ -281,7 +318,7 @@ export class AlphaVantageService {
   }
 
   // Get volatility with daily caching - calculates only once per day
-  static async getVolatilityWithDailyCache(fromCurrency: string, toCurrency: string): Promise<any> {
+  static async getVolatilityWithDailyCache(fromCurrency: string, toCurrency: string): Promise<VolatilityData> {
     const pair = `${fromCurrency}${toCurrency}`;
     
     // Clear old cache entries first
@@ -344,7 +381,7 @@ export class AlphaVantageService {
   }
 
   // Calculate volatility from real historical data
-  static async calculateRealVolatility(fromCurrency: string, toCurrency: string): Promise<any> {
+  static async calculateRealVolatility(fromCurrency: string, toCurrency: string): Promise<VolatilityData> {
     // Fetch historical FX data
     const historicalData = await this.getHistoricalData(fromCurrency, toCurrency);
     
@@ -375,7 +412,7 @@ export class AlphaVantageService {
   }
 
   // Fallback volatility data for when API fails
-  static getFallbackVolatility(fromCurrency: string, toCurrency: string): any {
+  static getFallbackVolatility(fromCurrency: string, toCurrency: string): VolatilityData {
     // Enhanced fallback data with more realistic volatilities by currency pair
     const fallbackVolatilities: { [key: string]: number } = {
       // Major pairs (lower volatility)
