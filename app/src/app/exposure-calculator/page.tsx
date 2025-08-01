@@ -29,6 +29,34 @@ interface VolatilityData {
   source: string;
   period: string;
   confidence: string;
+  trend?: {
+    direction: 'up' | 'down' | 'sideways';
+    percentage: number;
+    description: string;
+  };
+  priceRange?: {
+    min: number;
+    max: number;
+    current: number;
+  };
+  riskScore?: {
+    level: 'low' | 'medium' | 'high';
+    score: number;
+    description: string;
+  };
+  dataPoints?: number;
+  lastUpdated?: string;
+  rateLimitInfo?: {
+    waitTime: number;
+    nextAvailable: Date;
+    remainingCalls: number;
+  };
+  remainingCalls?: number;
+  cached?: boolean;
+  error?: string;
+  calculationMethod?: string;
+  cacheType?: string;
+  freshCalculation?: boolean;
 }
 
 export default function ExposureCalculator() {
@@ -47,10 +75,10 @@ export default function ExposureCalculator() {
   const [loadingVolatility, setLoadingVolatility] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load initial volatility data
-  useEffect(() => {
-    fetchVolatility(exposureData.baseCurrency, exposureData.targetCurrency);
-  }, []);
+  // Remove automatic volatility loading to preserve API calls
+  // useEffect(() => {
+  //   fetchVolatility(exposureData.baseCurrency, exposureData.targetCurrency);
+  // }, []);
 
   const currencies = [
     { code: 'EUR', name: 'Euro' },
@@ -179,9 +207,11 @@ export default function ExposureCalculator() {
         // Calculate risk metrics
         const exposureValue = exposureData.amount * currentRate;
         
-        // Value at Risk calculation (simplified)
-        // VaR = Position × Volatility × √(Time/365) × Z-score (95% confidence = 1.645)
-        const timeAdjustedVolatility = (volatilityToUse / 100) * Math.sqrt(exposureData.timeHorizon / 365);
+        // Value at Risk calculation (parametric method)
+        // VaR = Position × Volatility_adjusted × Z-score (95% confidence = 1.645)
+        // Convert annual volatility to time horizon using trading days (252 per year)
+        const tradingDaysInPeriod = Math.min(exposureData.timeHorizon, 252); // Cap at 1 year
+        const timeAdjustedVolatility = (volatilityToUse / 100) * Math.sqrt(tradingDaysInPeriod / 252);
         const valueAtRisk = exposureValue * timeAdjustedVolatility * 1.645;
         
         const potentialGain = exposureValue * timeAdjustedVolatility * 1.645;
@@ -225,13 +255,12 @@ export default function ExposureCalculator() {
     setRiskMetrics(null); // Clear previous results
     setError(null); // Clear previous errors
     
-    // Fetch new volatility when currencies change
+    // Clear volatility data when currencies change - user will need to manually fetch
     const newBaseCurrency = field === 'baseCurrency' ? value : exposureData.baseCurrency;
     const newTargetCurrency = field === 'targetCurrency' ? value : exposureData.targetCurrency;
     
-    if (newBaseCurrency !== newTargetCurrency) {
-      fetchVolatility(newBaseCurrency, newTargetCurrency);
-    } else {
+    if (newBaseCurrency === newTargetCurrency) {
+      // Same currency - no volatility needed
       setVolatilityData({
         from: newBaseCurrency,
         to: newTargetCurrency,
@@ -241,6 +270,9 @@ export default function ExposureCalculator() {
         period: '30_days_annualized',
         confidence: 'high'
       });
+    } else {
+      // Different currencies - clear volatility data to require manual fetch
+      setVolatilityData(null);
     }
   };
 
@@ -348,20 +380,116 @@ export default function ExposureCalculator() {
 
             {/* Volatility Display */}
             {volatilityData && volatilityData.volatility !== undefined && (
-              <div className="mb-6 p-3 bg-slate-700/50 border border-slate-600 rounded-lg">
-                <div className="flex items-center justify-between">
+              <div className="mb-6 p-4 bg-slate-700/50 border border-slate-600 rounded-lg">
+                <div className="flex items-center justify-between mb-3">
                   <div>
-                    <div className="text-sm text-slate-400">Market Volatility</div>
-                    <div className="text-lg font-semibold text-white">
+                    <div className="text-sm text-slate-400">Market Volatility (30-day)</div>
+                    <div className="text-xl font-semibold text-white">
                       {volatilityData.volatility.toFixed(1)}% p.a.
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-xs text-slate-500">
-                      {volatilityData.source === 'historical_data' ? '📊 Historical' : '📈 Estimated'}
+                      {volatilityData.source === 'alpha_vantage_historical' ? '🔴 Real Historical Data' : 
+                       volatilityData.source === 'daily_cache' ? '📅 Daily Cache' : 
+                       volatilityData.source === 'alpha_vantage' ? '🔴 Live Data' : 
+                       volatilityData.source === 'historical_data' ? '📊 Historical' : 
+                       volatilityData.cached ? '💾 Cached' : '📈 Estimated'}
                     </div>
                     <div className="text-xs text-slate-500">
                       {volatilityData.confidence} confidence
+                      {volatilityData.calculationMethod === 'historical_standard_deviation' && ' • Real Data'}
+                    </div>
+                    {volatilityData.remainingCalls !== undefined && (
+                      <div className="text-xs text-blue-400">
+                        API calls: {volatilityData.remainingCalls}/5
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Trend Information */}
+                {volatilityData.trend && (
+                  <div className="flex items-center justify-between text-sm">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-slate-400">Trend:</span>
+                      <span className={`font-medium ${
+                        volatilityData.trend.direction === 'up' ? 'text-green-400' :
+                        volatilityData.trend.direction === 'down' ? 'text-red-400' : 'text-yellow-400'
+                      }`}>
+                        {volatilityData.trend.direction === 'up' ? '↗️' : 
+                         volatilityData.trend.direction === 'down' ? '↘️' : '→'} 
+                        {volatilityData.trend.percentage > 0 ? '+' : ''}{volatilityData.trend.percentage.toFixed(1)}%
+                      </span>
+                    </div>
+                    
+                    {/* Risk Level */}
+                    {volatilityData.riskScore && (
+                      <div className="flex items-center space-x-2">
+                        <span className="text-slate-400">Risk:</span>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          volatilityData.riskScore.level === 'high' ? 'bg-red-500/20 text-red-300' :
+                          volatilityData.riskScore.level === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
+                          'bg-green-500/20 text-green-300'
+                        }`}>
+                          {volatilityData.riskScore.level.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {/* Rate Limit Warning */}
+                {volatilityData.rateLimitInfo && (
+                  <div className="mt-2 p-2 bg-yellow-500/20 border border-yellow-400/30 rounded text-xs text-yellow-300">
+                    ⚠️ API limit reached. Next call available in {volatilityData.rateLimitInfo.waitTime}s
+                  </div>
+                )}
+                
+                {/* API Error */}
+                {volatilityData.error && (
+                  <div className="mt-2 p-2 bg-red-500/20 border border-red-400/30 rounded text-xs text-red-300">
+                    ⚠️ {volatilityData.error} - Using fallback data
+                  </div>
+                )}
+                
+                {/* Data Source Info */}
+                {volatilityData.lastUpdated && (
+                  <div className="mt-2 text-xs text-slate-500">
+                    Last updated: {new Date(volatilityData.lastUpdated).toLocaleString()}
+                    {volatilityData.dataPoints && ` • ${volatilityData.dataPoints} data points`}
+                    {volatilityData.calculationMethod === 'historical_standard_deviation' && ' • Real volatility calculation'}
+                    {volatilityData.cacheType === 'daily' && volatilityData.cached && ' • Daily cache active'}
+                    {volatilityData.freshCalculation && ' • Fresh calculation'}
+                  </div>
+                )}
+                
+                {/* Daily Cache Info */}
+                {volatilityData.cacheType === 'daily' && (
+                  <div className="mt-2 p-2 bg-green-500/20 border border-green-400/30 rounded text-xs text-green-300">
+                    💾 Daily Cache: This volatility calculation is cached for 24 hours to optimize API usage while maintaining accuracy.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* No Volatility Data Message */}
+            {!volatilityData && exposureData.baseCurrency !== exposureData.targetCurrency && !loadingVolatility && (
+              <div className="mb-6 p-4 bg-blue-500/20 border border-blue-400/30 rounded-lg">
+                <div className="flex items-start space-x-3">
+                  <div className="text-blue-400 text-lg">📊</div>
+                  <div>
+                    <div className="text-sm font-medium text-blue-300 mb-1">
+                      Real Market Volatility Calculation Available
+                    </div>
+                    <div className="text-xs text-blue-200">
+                      Click "Pre-calculate Volatility" to fetch historical price data for {exposureData.baseCurrency}/{exposureData.targetCurrency} and calculate <strong>real volatility</strong> based on 30 days of actual market movements.
+                    </div>
+                    <div className="text-xs text-blue-300 mt-1">
+                      ✨ <strong>Professional Feature:</strong> Uses standard deviation of daily returns (annualized) instead of estimated values.
+                    </div>
+                    <div className="text-xs text-blue-300 mt-1">
+                      💡 Without real data, calculations will use estimated values ({exposureData.baseCurrency === 'EUR' && exposureData.targetCurrency === 'USD' ? '7.2' : '12'}% annual volatility).
                     </div>
                   </div>
                 </div>
@@ -404,15 +532,32 @@ export default function ExposureCalculator() {
               </div>
             )}
 
+            {/* Pre-calculate Volatility Button */}
+            {!volatilityData && exposureData.baseCurrency !== exposureData.targetCurrency && (
+              <button
+                onClick={() => fetchVolatility(exposureData.baseCurrency, exposureData.targetCurrency)}
+                disabled={loadingVolatility}
+                className="w-full mb-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 disabled:opacity-50 shadow-lg"
+              >
+                {loadingVolatility ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Fetching Market Data...</span>
+                  </div>
+                ) : (
+                  <>📊 Pre-calculate Volatility ({exposureData.baseCurrency}/{exposureData.targetCurrency})</>
+                )}
+              </button>
+            )}
+
             {/* Calculate Button */}
             <button
               onClick={calculateExposure}
-              disabled={loading || loadingVolatility || !volatilityData || volatilityData.volatility === undefined}
+              disabled={loading || loadingVolatility}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 disabled:opacity-50 shadow-lg"
             >
               {loading ? 'Calculating...' : 
                loadingVolatility ? 'Loading Market Data...' :
-               !volatilityData || volatilityData.volatility === undefined ? 'Select Currency Pair' :
                'Calculate Exposure & Risk'}
             </button>
           </div>
@@ -425,6 +570,18 @@ export default function ExposureCalculator() {
             
             {riskMetrics ? (
               <div className="space-y-6">
+                {/* Calculation Details */}
+                <div className="bg-slate-700/70 rounded-lg p-4 border border-slate-600">
+                  <div className="text-sm text-slate-400 mb-2">Calculation Details</div>
+                  <div className="space-y-1 text-xs text-slate-300">
+                    <div>Exposure: {formatCurrency(exposureData.amount, exposureData.baseCurrency)} × {exposureData.currentRate.toFixed(4)} = {formatCurrency(riskMetrics.exposureValue, exposureData.targetCurrency)}</div>
+                    <div>Annual Volatility: {exposureData.volatility.toFixed(1)}%</div>
+                    <div>Time Horizon: {exposureData.timeHorizon} days (√{exposureData.timeHorizon}/252 = {Math.sqrt(exposureData.timeHorizon / 252).toFixed(3)})</div>
+                    <div>Time-Adjusted Vol: {exposureData.volatility.toFixed(1)}% × {Math.sqrt(exposureData.timeHorizon / 252).toFixed(3)} = {((exposureData.volatility || 12) * Math.sqrt(exposureData.timeHorizon / 252)).toFixed(2)}%</div>
+                    <div>VaR (95%): {formatCurrency(riskMetrics.exposureValue, exposureData.targetCurrency)} × {((exposureData.volatility || 12) * Math.sqrt(exposureData.timeHorizon / 252) / 100).toFixed(4)} × 1.645 = {formatCurrency(riskMetrics.valueAtRisk, exposureData.targetCurrency)}</div>
+                  </div>
+                </div>
+
                 {/* Current Rate */}
                 <div className="bg-slate-700/70 rounded-lg p-4 border border-slate-600">
                   <div className="text-sm text-slate-400">Current Exchange Rate</div>
@@ -483,11 +640,21 @@ export default function ExposureCalculator() {
                 {/* Risk Explanation */}
                 <div className="bg-indigo-500/20 border border-indigo-400/30 rounded-lg p-4">
                   <h3 className="font-semibold text-indigo-300 mb-2">Risk Assessment</h3>
-                  <p className="text-sm text-indigo-200">
-                    Based on {exposureData.volatility}% annual volatility over {exposureData.timeHorizon} days, 
-                    there is a 5% chance your exposure could lose more than{' '}
-                    {formatCurrency(riskMetrics.valueAtRisk, exposureData.targetCurrency)} due to FX movements.
-                  </p>
+                  <div className="text-sm text-indigo-200 space-y-2">
+                    <p>
+                      <strong>Methodology:</strong> Parametric VaR using {exposureData.volatility}% annual volatility 
+                      over {exposureData.timeHorizon} trading days (95% confidence level).
+                    </p>
+                    <p>
+                      <strong>Calculation:</strong> Time-adjusted volatility = {exposureData.volatility}% × √({exposureData.timeHorizon}/252) 
+                      = {((exposureData.volatility || 12) * Math.sqrt(exposureData.timeHorizon / 252)).toFixed(2)}%
+                    </p>
+                    <p>
+                      <strong>Interpretation:</strong> There is a 5% chance your exposure could lose more than{' '}
+                      {formatCurrency(riskMetrics.valueAtRisk, exposureData.targetCurrency)} due to FX movements 
+                      over the next {exposureData.timeHorizon} days.
+                    </p>
+                  </div>
                 </div>
               </div>
             ) : (
